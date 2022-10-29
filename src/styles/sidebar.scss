@@ -19,17 +19,17 @@
     left: 0;
     z-index: 1001;
     overflow: hidden;
-
+    background: -webkit-linear-gradient(bottom, #3d6df8, #5b8cff);
     .horizontal-collapse-transition {
       transition: 0s width ease-in-out, 0s padding-left ease-in-out, 0s padding-right ease-in-out;
     }
-
     .scrollbar-wrapper {
+      background: url('~@/assets/common/leftnavBg.png') no-repeat 0 100%;
       overflow-x: hidden !important;
     }
 
     .el-scrollbar__bar.is-vertical {
-      right: 0px;
+      right: 0;
     }
 
     .el-scrollbar {
@@ -61,11 +61,49 @@
       margin-left: -2px;
     }
 
-    .el-menu {
-      border: none;
-      height: 100%;
-      width: 100% !important;
-    }
+     .el-menu {
+       border: none;
+       height: 100%;
+       width: 100% !important;
+  
+       a {
+         li {
+           .svg-icon {
+             color: #fff;
+             font-size: 18px;
+             vertical-align: middle;
+  
+             .icon {
+               color: #fff;
+             }
+           }
+          &.is-active {
+            background-color: #fff !important;
+          
+            .svg-icon {
+              color: #43a7fe;
+            }
+          
+            span {
+              color: #43a7fe;
+            }
+          }
+           span {
+             color: #fff;
+           }
+  
+           &:hover {
+             .svg-icon {
+               color: #43a7fe;
+             }
+  
+             span {
+               color: #43a7fe;
+             }
+           }
+         }
+       }
+     }
 
     // menu hover
     .submenu-title-noDropdown,
