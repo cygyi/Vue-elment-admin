@@ -8,6 +8,7 @@
   }
 
   .sidebar-container {
+    background: -webkit-linear-gradient(bottom, #3d6df8, #5b8cff);
     transition: width 0.28s;
     width: $sideBarWidth !important;
     background-color: $menuBg;
@@ -65,25 +66,25 @@
        border: none;
        height: 100%;
        width: 100% !important;
-  
+
        a {
          li {
            .svg-icon {
              color: #fff;
              font-size: 18px;
              vertical-align: middle;
-  
+
              .icon {
                color: #fff;
              }
            }
           &.is-active {
             background-color: #fff !important;
-          
+
             .svg-icon {
               color: #43a7fe;
             }
-          
+
             span {
               color: #43a7fe;
             }
@@ -91,12 +92,12 @@
            span {
              color: #fff;
            }
-  
+
            &:hover {
              .svg-icon {
                color: #43a7fe;
              }
-  
+
              span {
                color: #43a7fe;
              }
