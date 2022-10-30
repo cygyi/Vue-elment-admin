@@ -30,6 +30,17 @@ module.exports = {
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
   devServer: {
+    // 添加脚手架代理跨域
+    proxy: {
+      '/api': {
+        // 要替换的域名
+        target: 'http://ihrm-java.itheima.net',
+        // 是否跨域
+        changeOrigin: true
+        // 重写接口地址
+        // pathRewrite: {}
+      }
+    },
     port: port,
     open: true,
     overlay: {
