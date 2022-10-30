@@ -13,7 +13,14 @@ export function login(data) {
 export function getUserInfo() {
   return request({
     url: '/sys/profile',
-    methods: 'post'
+    method: 'post'
+  })
+}
+
+// 获取个人信息头像
+export function getStaffPhoto(id) {
+  return request({
+    url: `/sys/user/${id}`
   })
 }
 

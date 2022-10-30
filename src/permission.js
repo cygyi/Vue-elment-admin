@@ -8,7 +8,7 @@ import 'nprogress/nprogress.css'
 const whiteList = ['/login', '/404']
 // 设置路由守卫
 // 路由前置守卫
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   // 开启进度条
   nprogress.start()
   // 判断是否有token
@@ -17,6 +17,10 @@ router.beforeEach((to, from, next) => {
     if (to.path === '/login') {
       next('/')
     } else {
+      // 没有token 根据id判断如果没有id就获取
+      if (!store.getters.userId) {
+        await store.dispatch('user/getUserInfo')
+      }
       next()
     }
   } else {

@@ -1,5 +1,5 @@
 import { getToken, setToken, removeToken } from '@/utils/auth'
-import { login, getUserInfo } from '@/api/user'
+import { login, getUserInfo, getStaffPhoto } from '@/api/user'
 
 const state = {
   // 从本地取出token
@@ -30,7 +30,7 @@ const mutations = {
 const actions = {
   // 登录
   async login(context, data) {
-    // 发起请求
+    // 获取用户资料
     const res = await login(data)
     // 设置token
     await context.commit('setToken', res)
@@ -39,10 +39,20 @@ const actions = {
   // 获取用户资料
   async getUserInfo(context) {
     const res = await getUserInfo()
+    // 获取头像
+    const StaffPhoto = await getStaffPhoto(res.userId)
     // 将获取的个人信息存储到vuex
-    context.commit('setUserInfo', res)
+    await context.commit('setUserInfo', { ...res, ...StaffPhoto })
     // 后面权限需要
     return res
+  },
+
+  // 退出登录
+  logout (context) {
+    // 删除token
+    context.commit('removeToken')
+    // 删除用户信息
+    context.commit('removeUserInfo')
   }
 }
 
