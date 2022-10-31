@@ -1,4 +1,4 @@
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getToken, setToken, removeToken, setTimeStamp } from '@/utils/auth'
 import { login, getUserInfo, getStaffPhoto } from '@/api/user'
 
 const state = {
@@ -34,6 +34,8 @@ const actions = {
     const res = await login(data)
     // 设置token
     await context.commit('setToken', res)
+    // 存入时间戳
+    setTimeStamp()
   },
 
   // 获取用户资料
