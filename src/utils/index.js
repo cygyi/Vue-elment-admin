@@ -115,3 +115,21 @@ export function param2Obj(url) {
   })
   return obj
 }
+
+// 封装数组转成树形数组的方法
+export function tranListToTreeData (list, rootValue) {
+  const arr = []
+  // 循环判断是不是根节点
+  list.forEach(item => {
+    if (item.pid === rootValue) {
+      // 调用自身 判断哪个属于该根节点
+      const children = tranListToTreeData(list, item.id)
+      // 如果children的长度大于0 说明找到了子节点 将子节点添加到根节点
+      if (children.length) {
+        item.children = children
+      }
+      arr.push(item)
+    }
+  })
+  return arr
+}

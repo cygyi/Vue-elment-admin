@@ -5,13 +5,14 @@ export default {
   path: '/approvals',
   name: 'approvals',
   component: Layout,
-  children: {
+  children: [{
     // 设置为空 是二级路由的默认规则 一级路由路径也会显示二级组件
     path: '',
     component: () => import('@/views/approvals'),
-    mate: {
-      title: '审批'
+    meta: {
+      title: '审批',
+      icon: 'tree-table'
     }
-  }
+  }]
 }
 
