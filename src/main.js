@@ -14,6 +14,7 @@ import router from './router'
 
 import '@/icons' // icon
 import '@/permission' // permission control
+import Components from '@/components'
 
 // 引入全部变量
 import * as directives from '@/directives'
@@ -36,6 +37,9 @@ Object.keys(directives).forEach(key => {
 Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明
 // Vue.use(ElementUI)
+
+// 注册全局组件
+Vue.use(Components)
 
 Vue.config.productionTip = false
 
