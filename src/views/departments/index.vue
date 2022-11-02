@@ -9,10 +9,10 @@
           :props="defaultProps"
           default-expand-all
         >
-          <tree-tools slot-scope="{ data }" :tree-node="data" @delDepart="getDepartments" @addDepart="addDepart" />
+          <tree-tools slot-scope="{ data }" :tree-node="data" @emitDepart="emitDepart" @delDepart="getDepartments" @addDepart="addDepart" />
         </el-tree>
         <!-- 弹层 -->
-        <add-dept :show-dialog="showDialog" :tree-node="node" />
+        <add-dept ref="addDept" :show-dialog.sync="showDialog" :tree-node="node" @addDept="getDepartments" />
       </el-card>
     </div>
   </div>
@@ -58,6 +58,14 @@ export default {
       this.showDialog = true
       // 将节点保存
       this.node = node
+    },
+    // 显示弹层 编辑部门
+    emitDepart(node) {
+      this.showDialog = true
+      // 将节点保存
+      this.node = node
+      // 通过ref获取组件的实例 调用它的方法进行获取当个部门 防止异步
+      this.$refs.addDept.getDepartDetail(node.id)
     }
   }
 }

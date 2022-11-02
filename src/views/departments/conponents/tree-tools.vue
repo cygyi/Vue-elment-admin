@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { delDepartments } from '@/api/departments'
+import { delDepartments, getDepartDetail } from '@/api/departments'
 
 export default {
   name: 'TreeTools',
@@ -47,6 +47,7 @@ export default {
         this.$emit('addDepart', this.treeNode)
       } else if (type === 'emit') {
         // 点击的是编辑部门按钮
+        this.$emit('emitDepart', this.treeNode)
       } else {
         // 点击的是删除按钮 调用删除方法
         // 提示用户是否确定删除
