@@ -19,8 +19,8 @@
 </template>
 
 <script>
-import TreeTools from '@/views/departments/conponents/tree-tools'
-import addDept from '@/views/departments/conponents/add-dept'
+import TreeTools from '@/views/departments/components/tree-tools'
+import addDept from '@/views/departments/components/add-dept'
 
 import { getDepartments } from '@/api/departments'
 import { tranListToTreeData } from '@/utils'

@@ -14,3 +14,20 @@ export function getEmployeeList (pages) {
     params: pages
   })
 }
+
+// 删除员工请求
+export function deleteEmployee (id) {
+  return request({
+    url: `/sys/user/${id}`,
+    method: 'delete'
+  })
+}
+
+// 新增员工请求
+export function addEmployee (data) {
+  return request({
+    url: '/sys/user',
+    method: 'post',
+    data
+  })
+}
