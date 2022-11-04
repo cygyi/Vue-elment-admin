@@ -7,8 +7,8 @@
           <span>共{{ pages.total }}条数据</span>
         </template>
         <template #right>
-          <el-button size="small" type="success">excel导入</el-button>
-          <el-button size="small" type="danger">excel导出</el-button>
+          <el-button size="small" type="success" @click="$router.push('/import')">excel导入</el-button>
+          <el-button size="small" type="danger" @click="excelData">excel导出</el-button>
           <el-button size="small" type="primary" @click="showEmployee = true">新增员工</el-button>
         </template>
       </page-tools>
@@ -59,6 +59,7 @@
 import { getEmployeeList, deleteEmployee } from '@/api/employees'
 import EmployeesEnum from '@/api/constant/employees' // 员工枚举对象
 import addEmployee from '@/views/employees/components/add-employee'
+import { formatDate } from '@/filters'
 
 export default {
   components: {
@@ -111,6 +112,58 @@ export default {
       } catch (error) {
         console.log(error)
       }
+    },
+    // 导出员工excel表格
+    async excelData () {
+      // 定义一个与数据对应的表头 进行中英文转换
+      const headersRelations = {
+        '姓名': 'username',
+        '手机号': 'mobile',
+        '入职日期': 'timeOfEntry',
+        '聘用形式': 'formOfEmployment',
+        '转正日期': 'correctionTime',
+        '工号': 'workNumber',
+        '部门': 'departmentName'
+      }
+      // 获取所有的员工数据 一次性
+      const { rows } = await getEmployeeList({ page: 1, size: this.pages.total })
+      // 将数组转成我们需要的数据格式
+      const data = this.formatJson(rows, headersRelations)
+      // 复杂表头和合并数据
+      const multiHeader = [['姓名', '主要信息', '', '', '', '', '部门']]
+      const merges = ['A1:A2', 'B1:F1', 'G1:G2']
+      // 懒加载导入js文件
+      import('@/vendor/Export2Excel').then(excel => {
+        // excel是导入js文件成功后的文件对象
+        excel.export_json_to_excel({
+          header: Object.keys(headersRelations),
+          data,
+          filename: '员工资料表',
+          multiHeader,
+          merges
+        })
+      })
+    },
+    // 对应顺序 对象转成数组的办法
+    formatJson (rows, header) {
+      // rows获取的所有员工信息 header是定义好的对应表头对象
+      // 这里是返回整个数组
+      return rows.map(item => {
+        // 这里是返回每个数组
+        return Object.keys(header).map(key => {
+          // 获取对应的英文key值 从item中将值返回到数组中
+          // 判断是否需要转换时间格式和聘用形式
+          if (header[key] === 'timeOfEntry' || header[key] === 'correctionTime') {
+            // 导入转化时间格式方法 转换格式在返回
+            return formatDate(item[header[key]])
+          } else if (header[key] === 'formOfEmployment') {
+            // 利用员工枚举数据 转换聘用形式格式
+            const type = EmployeesEnum.hireType.find(obj => obj.id === item[header[key]])
+            return type ? type.value : '未知'
+          }
+          return item[header[key]] // 这里是返回每个值
+        })
+      })
     }
   }
 }
