@@ -40,3 +40,12 @@ export function reqImportEmployee (data) {
     data
   })
 }
+
+// 更新员工信息请求
+export function updateEmployee (data) {
+  return request({
+    url: `/sys/user/${data.id}`,
+    method: 'put',
+    data
+  })
+}

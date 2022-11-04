@@ -24,6 +24,3 @@ export function getStaffPhoto(id) {
   })
 }
 
-export function logout() {
-
-}
