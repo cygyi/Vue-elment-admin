@@ -4,7 +4,7 @@
       <h2>
         审批
       </h2>
-      <upload-excel />
+      <image-upload />
     </div>
   </div>
 </template>

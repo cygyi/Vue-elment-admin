@@ -49,3 +49,43 @@ export function updateEmployee (data) {
     data
   })
 }
+
+// 获取员工基础信息请求
+export function getPersonalDetail (id) {
+  return request({
+    url: `/employees/${id}/personalInfo`
+  })
+}
+
+// 保存员工基础信息请求
+export function updatePersonalDetail (data, id) {
+  return request({
+    url: `/employees/${id}/personalInfo`,
+    method: 'put',
+    data
+  })
+}
+
+// 读取岗位信息
+export function getTransferPosition (id) {
+  return request({
+    url: `/employees/${id}/transferPosition`
+  })
+}
+// 保存岗位信息
+export function updateTransferPosition (data) {
+  return request({
+    url: `/employees/${data.userId}/transferPosition`,
+    method: 'put',
+    data
+  })
+}
+
+// 保存员工角色
+export function saveTheRole (data) {
+  return request({
+    url: '/sys/user/assignRoles',
+    method: 'put',
+    data
+  })
+}

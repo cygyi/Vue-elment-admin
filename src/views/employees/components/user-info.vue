@@ -44,7 +44,7 @@
             <el-select v-model="userInfo.formOfEmployment" class="inputW">
               <el-option
                 v-for="item in EmployeeEnum.hireType"
-                :key="item.id"
+                :key="item.value"
                 :label="item.value"
                 :value="item.id"
               />
@@ -57,7 +57,7 @@
         <el-col :span="12">
           <el-form-item label="员工头像">
             <!-- 放置上传图片 -->
-
+            <image-upload ref="StaffPhoto" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -89,6 +89,7 @@
 
         <el-form-item label="员工照片">
           <!-- 放置上传图片 -->
+          <image-upload ref="myStaffPhoto" />
         </el-form-item>
         <el-form-item label="国家/地区">
           <el-select v-model="formData.nationalArea" class="inputW2">
@@ -282,11 +283,14 @@
 
 <script>
 import EmployeeEnum from '@/api/constant/employees'
+import { getStaffPhoto } from '@/api/user'
+import { getPersonalDetail, updatePersonalDetail, updateEmployee } from '@/api/employees'
 
 export default {
   name: 'UserInfo',
   data() {
     return {
+
       EmployeeEnum,
       userInfo: {
         workNumber: '', // 工号
@@ -359,6 +363,59 @@ export default {
         proofOfDepartureOfFormerCompany: '', // 前公司离职证明
         remarks: '' // 备注
       }
+    }
+  },
+  computed: {
+    userId() {
+      return this.$route.params.id
+    }
+  },
+  created() {
+    this.getStaffPhoto()
+    this.getPersonalDetail()
+  },
+  methods: {
+    // 获取基本信息
+    async getStaffPhoto () {
+      this.userInfo = await getStaffPhoto(this.userId)
+      // 判断图片是否存在 并且去掉空格
+      if (this.userInfo.staffPhoto && this.userInfo.staffPhoto.trim()) {
+        // 将图片赋值给组件
+        this.$refs.StaffPhoto.fileList = [{ url: this.userInfo.staffPhoto, upload: true }]
+      }
+    },
+    // 保存基本信息
+    async saveUser () {
+      // 获取实例数组 只有头像上传完成才能保存
+      const fileList = this.$refs.StaffPhoto.fileList
+      if (fileList.some(item => !item.upload)) {
+        // 提示 return
+        this.$message.warning('头像还未上传成功，请稍等')
+        return
+      }
+      // 发起请求 提示成功
+      this.userInfo = await updateEmployee({ ...this.userInfo, staffPhoto: fileList.length ? fileList[0].url : ' ' })
+      this.$message.success('修改信息成功')
+    },
+    // 获取基础信息
+    async getPersonalDetail () {
+      this.formData = await getPersonalDetail(this.userId)
+      if (this.formData.staffPhoto && this.formData.staffPhoto.trim()) {
+        // 将图片赋值给组件
+        this.$refs.myStaffPhoto.fileList = [{ url: this.formData.staffPhoto, upload: true }]
+      }
+    },
+    // 保存基础信息
+    async savePersonal () {
+      const fileList = this.$refs.myStaffPhoto.fileList
+      // 判断头像上传成功才能保存
+      if (fileList.some(item => !item.upload)) {
+        // 提示 return
+        this.$message.warning('头像还未上传成功，请稍等')
+        return
+      }
+      await updatePersonalDetail({ ...this.formData, staffPhoto: fileList.length ? fileList[0].url : ' ' }, this.userId)
+      this.$message.success('修改基础信息成功')
     }
   }
 }

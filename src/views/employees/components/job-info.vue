@@ -15,7 +15,7 @@
           />
         </el-form-item> -->
         <el-form-item label="转正状态">
-          <el-select v-model="formData.stateOfCorrection" placeholder="请选择" disabled>
+          <el-select v-model="formData.stateOfCorrection" placeholder="请选择" disabled value="">
             <el-option
               v-for="item in EmployeeEnum.stateOfCorrection"
               :key="item.value"
@@ -30,12 +30,12 @@
           <el-input v-model="formData.correctionEvaluation" type="textarea" placeholder="1-300位字符" />
         </el-form-item>
         <el-form-item label="汇报对象">
-          <el-select v-model="formData.reportId" filterable placeholder="请选择" class="inputW">
+          <el-select v-model="formData.reportId" filterable placeholder="请选择" class="inputW" value="">
             <el-option v-for="item in list" :key="item.id" :label="item.username" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="HRBP">
-          <el-select v-model="formData.hrbp" filterable placeholder="请选择" class="inputW">
+          <el-select v-model="formData.hrbp" filterable placeholder="请选择" class="inputW" value="">
             <el-option v-for="item in list" :key="item.id" :label="item.username" :value="item.id" class="inputW" />
           </el-select>
         </el-form-item>
@@ -85,7 +85,7 @@
           />
         </el-form-item>
         <el-form-item label="合同期限">
-          <el-select v-model="formData.contractPeriod" class="filter-item">
+          <el-select v-model="formData.contractPeriod" class="filter-item" :value="formData.contractPeriod">
             <el-option
               v-for="item in EmployeeEnum.contractPeriod"
               :key="item.value"
@@ -95,7 +95,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="续签次数">
-          <el-select v-model="formData.renewalNumber" class="filter-item">
+          <el-select v-model="formData.renewalNumber" class="filter-item" :value="formData.renewalNumber">
             <el-option
               v-for="item in EmployeeEnum.renewalCount"
               :key="item.id"
@@ -109,7 +109,7 @@
       <div class="block">
         <div class="title">招聘信息</div>
         <el-form-item label="其他招聘渠道">
-          <el-select v-model="formData.otherRecruitmentChannels" placeholder="请选择">
+          <el-select v-model="formData.otherRecruitmentChannels" placeholder="请选择" value="">
             <el-option
               v-for="item in EmployeeEnum.resumeSource"
               :key="item.id"
@@ -119,7 +119,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="招聘渠道">
-          <el-select v-model="formData.recruitmentChannels" placeholder="请选择">
+          <el-select v-model="formData.recruitmentChannels" placeholder="请选择" value="">
             <el-option
               v-for="item in EmployeeEnum.resumeSource"
               :key="item.value"
@@ -129,7 +129,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="社招/校招">
-          <el-select v-model="formData.socialRecruitment" placeholder="请选择">
+          <el-select v-model="formData.socialRecruitment" placeholder="请选择" value="">
             <el-option
               v-for="item in EmployeeEnum.hireSourceType"
               :key="item.value"
@@ -154,6 +154,7 @@
 
 <script>
 import EmployeeEnum from '@/api/constant/employees'
+import { getEmployeeSimple, getTransferPosition, updateTransferPosition } from '@/api/employees'
 
 export default {
   data() {
@@ -195,9 +196,28 @@ export default {
       return this.$route.params.id
     }
   },
+  created() {
+    this.getTransferPosition()
+    this.getEmployeeSimple()
+  },
   methods: {
-    saveJob() {
-
+    // 获取员工岗位信息
+    async getTransferPosition () {
+      this.formData = await getTransferPosition(this.userId)
+    },
+    // 保存员工岗位信息
+    async saveJob () {
+      try {
+        await updateTransferPosition(this.formData)
+        // 提示
+        this.$message.success('修改岗位信息成功')
+      } catch (e) {
+        console.log(e)
+      }
+    },
+    // 获取员工简单列表
+    async getEmployeeSimple () {
+      this.list = await getEmployeeSimple()
     }
   }
 }

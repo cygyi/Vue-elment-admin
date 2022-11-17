@@ -17,10 +17,22 @@
             </el-form>
           </el-tab-pane>
           <el-tab-pane label="个人详情">
+            <!-- 员工打印 -->
+            <el-tooltip class="tooltip-box" content="打印基本个人信息">
+              <router-link :to="`/employees/print/${userId}?type=personal`">
+                <i class="el-icon-printer" />
+              </router-link>
+            </el-tooltip>
             <!-- 动态组件 is必须是一个变量 是变量名称 可以是任意组件 实现组件切换 -->
             <component :is="userComponent" />
           </el-tab-pane>
           <el-tab-pane label="岗位信息">
+            <!-- 岗位打印 -->
+            <el-tooltip class="tooltip-box" content="打印基本岗位信息">
+              <router-link :to="`/employees/print/${userId}?type=job`">
+                <i class="el-icon-printer" />
+              </router-link>
+            </el-tooltip>
             <!-- 动态组件 is必须是一个变量 是变量名称 可以是任意组件 实现组件切换 -->
             <component :is="jobComponent" />
           </el-tab-pane>
@@ -86,6 +98,16 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+.el-tabs__content {
+  .el-tab-pane {
+    padding-top: 10px;
+  }
+  .tooltip-box {
+    position: absolute;
+    right: 30px;
+    top: 10px;
+    z-index: 999;
+  }
+}
 </style>

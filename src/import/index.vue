@@ -30,7 +30,7 @@ export default {
         })
         return userInfo
       })
-      console.log(newArr)
+
       // 调用导入请求 提示成功 回到上一页
       await reqImportEmployee(newArr)
       this.$message.success('导入员工成功')

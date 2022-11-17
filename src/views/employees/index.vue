@@ -17,6 +17,11 @@
         <el-table border="border" :data="list">
           <el-table-column type="index" sortable label="序号" />
           <el-table-column prop="username" sortable label="姓名" />
+          <el-table-column label="头像" align="center">
+            <template #default="{ row }">
+              <img v-imgerror="require('@/assets/common/bigUserHeader.png')" :src="row.staffPhoto" alt="" style="width: 80px;height: 80px;border-radius: 50%;padding: 10px" @click="showQrcode(row.staffPhoto)">
+            </template>
+          </el-table-column>
           <el-table-column prop="mobile" sortable label="手机号" />
           <el-table-column prop="workNumber" sortable label="工号" />
           <el-table-column :formatter="formatterEmployees" prop="formOfEmployment" sortable label="聘用形式" />
@@ -33,7 +38,7 @@
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
-              <el-button type="text" size="small">角色</el-button>
+              <el-button type="text" size="small" @click="showRoleDialog(row.id)">角色</el-button>
               <el-button type="text" size="small" @click="deleteEmployee(row.id)">删除</el-button>
             </template>
           </el-table-column>
@@ -51,6 +56,14 @@
       </el-card>
       <!-- 新增员工弹层 -->
       <add-employee :show-employee.sync="showEmployee" />
+      <!-- 头像二维码弹层 -->
+      <assign-role ref="role" :user-id="userId" :is-show.sync="isShow" />
+      <!-- 头像二维码弹层 -->
+      <el-dialog width="300px" title="头像二维码" :visible.sync="showStaffPhoto">
+        <el-row type="flex" justify="center">
+          <canvas ref="myCanvas" />
+        </el-row>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -60,9 +73,12 @@ import { getEmployeeList, deleteEmployee } from '@/api/employees'
 import EmployeesEnum from '@/api/constant/employees' // 员工枚举对象
 import addEmployee from '@/views/employees/components/add-employee'
 import { formatDate } from '@/filters'
+import Qrcode from 'qrcode'
+import AssignRole from '@/views/employees/components/assign-role'
 
 export default {
   components: {
+    AssignRole,
     addEmployee
   },
   data () {
@@ -74,13 +90,25 @@ export default {
         total: 0
       },
       loading: false, // 进度条
-      showEmployee: false // 弹层
+      showEmployee: false, // 员工弹层
+      showStaffPhoto: false, // 头像弹层
+      isShow: false, // 员工权限弹层
+      userId: '' // 员工id
     }
   },
   created() {
     this.getEmployeeList()
   },
   methods: {
+    // 修改员工权限
+    async showRoleDialog(id) {
+      // 拿到id 将id传给子组件
+      this.userId = id
+      // 获取角色权限 通过$refs调用子组件的方法
+      await this.$refs.role.getStaffPhoto(id)
+      // 打开弹层
+      this.isShow = true
+    },
     // 获取员工资料
     async getEmployeeList () {
       // 开启进度条 发起请求
@@ -163,6 +191,19 @@ export default {
           }
           return item[header[key]] // 这里是返回每个值
         })
+      })
+    },
+    // 显示员工头像二维码
+    showQrcode(url) {
+      // 判断是否有上传头像
+      if (!url) {
+        return this.$message.warning('该用户没有上传头像')
+      }
+      this.showStaffPhoto = true
+      // 页面渲染是异步 没有等页面渲染丸才去执行 需要调用nextTick()
+      // 生成二维码
+      this.$nextTick(() => {
+        Qrcode.toCanvas(this.$refs.myCanvas, url)
       })
     }
   }

@@ -17,7 +17,7 @@ export function getUserInfo() {
   })
 }
 
-// 获取个人信息头像
+// 获取个人信息
 export function getStaffPhoto(id) {
   return request({
     url: `/sys/user/${id}`
