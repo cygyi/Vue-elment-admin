@@ -83,8 +83,6 @@ export default {
     async reqGetPermissionList () {
       // 将数据转成树形数组 含有children子级数组的数组 element表格组件会自定义识别成树形表格
       this.list = tranListToTreeData(await reqGetPermissionList(), '0')
-
-      console.log(this.list)
     },
 
     // 点击删除权限

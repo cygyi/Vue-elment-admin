@@ -39,3 +39,12 @@ export function reqGetPermissionDetail(id) {
     url: `/sys/permission/${id}`
   })
 }
+
+// 保存角色权限
+export function reqPutPermission (data) {
+  return request({
+    url: '/sys/role/assignPrem',
+    method: 'put',
+    data
+  })
+}

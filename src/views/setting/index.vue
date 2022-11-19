@@ -6,7 +6,9 @@
           <!-- 角色管理 -->
           <el-tab-pane label="角色管理">
             <!-- 新增按钮 -->
-            <el-row style="height: 60px"><el-button size="small" icon="el-icon-plus" type="primary" @click="showEmit = true">新增角色</el-button></el-row>
+            <el-row style="height: 60px">
+              <el-button size="small" icon="el-icon-plus" type="primary" @click="showEmit = true">新增角色</el-button>
+            </el-row>
             <!-- 角色表格 -->
             <el-table border="border" :data="list">
               <el-table-column type="index" label="序号" width="120" align="center" />
@@ -14,7 +16,7 @@
               <el-table-column prop="description" label="描述" align="center" />
               <el-table-column prop="companyId" label="操作" align="center">
                 <template slot-scope="{ row }">
-                  <el-button size="small" type="success">分配权限</el-button>
+                  <el-button size="small" type="success" @click="assignPermissions(row.id)">分配权限</el-button>
                   <el-button size="small" type="primary" @click="emitRole(row.id)">编辑</el-button>
                   <el-button size="small" type="danger" @click="deleteRole(row.id)">删除</el-button>
                 </template>
@@ -28,7 +30,8 @@
                 :total="pages.total"
                 layout="prev, pager, next"
                 @current-change="changePage"
-              /></el-row>
+              />
+            </el-row>
             <!-- 编辑弹层 -->
             <el-dialog title="编辑角色" :visible="showEmit" @close="btnCancel">
               <el-form ref="roleData" :model="roleData" :rules="rules" label-width="120px">
@@ -78,14 +81,38 @@
             </el-form>
           </el-tab-pane>
         </el-tabs>
+
+        <!-- 分配权限弹层 -->
+        <el-dialog title="分配权限" :visible="showPermDialog" @close="btnPermCancel">
+          <!-- 树形权限 -->
+          <el-tree
+            ref="permTree"
+            :data="permData"
+            :default-expand-all="true"
+            :props="permTreeProps"
+            :show-checkbox="true"
+            :check-strictly="true"
+            node-key="id"
+            :default-checked-keys="selectData"
+          />
+          <!-- 按钮 -->
+          <el-row style="margin-top: 15px;" type="flex" justify="center" align="center">
+            <el-col :span="4">
+              <el-button size="small" @click="btnPermCancel">取消</el-button>
+              <el-button size="small" type="primary" @click="btnPermOK">确认</el-button>
+            </el-col>
+          </el-row>
+        </el-dialog>
       </el-card>
     </div>
   </div>
 </template>
 
 <script>
-import { getRoleList, getCompanyInfo, deleteRole, getRoleDetail, updateRole, addRole } from '@/api/setting'
+import { addRole, deleteRole, getCompanyInfo, getRoleDetail, getRoleList, updateRole } from '@/api/setting'
 import { mapGetters } from 'vuex'
+import { tranListToTreeData } from '@/utils'
+import { reqGetPermissionList, reqPutPermission } from '@/api/permission'
 
 export default {
   data() {
@@ -106,7 +133,19 @@ export default {
       },
       rules: {
         name: [{ required: true, message: '角色名称不能为空', trigger: 'blur' }]
-      }
+      },
+      // 控制分配权限弹层
+      showPermDialog: false,
+
+      // 权限数据 树形名称
+      permData: [],
+      permTreeProps: {
+        label: 'name'
+      },
+
+      // 勾选权限数组
+      selectData: [],
+      roleId: null // 存储角色id
     }
   },
   computed: {
@@ -124,17 +163,17 @@ export default {
       this.list = rows
     },
     // 切换分页
-    changePage (newPage) {
+    changePage(newPage) {
       // 将当前页码赋值给数据 发起请求
       this.pages.page = newPage
       this.getRoleList()
     },
     // 获取公司信息
-    async getCompanyInfo () {
+    async getCompanyInfo() {
       this.formData = await getCompanyInfo(this.companyId)
     },
     // 删除角色列表
-    async deleteRole (id) {
+    async deleteRole(id) {
       try {
         // 提示是否删除
         await this.$confirm('是否删除该角色', '提示')
@@ -147,14 +186,14 @@ export default {
       }
     },
     // 编辑角色
-    async emitRole (id) {
+    async emitRole(id) {
       // 获取当前角色
       this.roleData = await getRoleDetail(id)
       // 显示弹层
       this.showEmit = true
     },
     // 弹层确定和取消
-    async btnOK () {
+    async btnOK() {
       try {
         // 表单校验是否通过
         await this.$refs.roleData.validate()
@@ -176,7 +215,7 @@ export default {
         console.log(error)
       }
     },
-    btnCancel () {
+    btnCancel() {
       // 清空表单数据 验证规则 关闭弹层
       this.roleData = {
         name: '',
@@ -184,7 +223,34 @@ export default {
       }
       this.$refs.roleData.resetFields()
       this.showEmit = false
+    },
+
+    // 分配权限
+    async assignPermissions (id) {
+      // 获取所有权限 转成树形数组 给树形组件显示
+      this.permData = tranListToTreeData(await reqGetPermissionList(), '0')
+      // 获取权限详情 默认勾选权限
+      this.roleId = id
+      const { permIds } = await getRoleDetail(id)
+      this.selectData = permIds
+      // 打开弹层
+      this.showPermDialog = true
+    },
+
+    // 分配权限点击确定取消
+    async btnPermOK () {
+      // 获取勾选的权限数组 发起请求 提示 关闭弹层
+      await reqPutPermission({ id: this.roleId, permIds: this.$refs.permTree.getCheckedKeys() })
+      this.$message.success('分配权限成功')
+      this.showPermDialog = false
+    },
+
+    btnPermCancel () {
+      // 清空勾选的权限数据 关闭弹层
+      this.selectData = []
+      this.showPermDialog = false
     }
+
   }
 }
 </script>
