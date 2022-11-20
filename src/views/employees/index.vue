@@ -9,7 +9,7 @@
         <template #right>
           <el-button size="small" type="success" @click="$router.push('/import')">excel导入</el-button>
           <el-button size="small" type="danger" @click="excelData">excel导出</el-button>
-          <el-button size="small" type="primary" @click="showEmployee = true">新增员工</el-button>
+          <el-button size="small" type="primary" :disabled="!checkPermission('POINT-USER-ADD')" @click="showEmployee = true">新增员工</el-button>
         </template>
       </page-tools>
       <!-- 表格 -->

@@ -3,7 +3,7 @@
 import Layout from '@/layout'
 export default {
   path: '/setting',
-  name: 'setting',
+  name: 'settings',
   component: Layout,
   children: [{
     // 设置为空 是二级路由的默认规则 一级路由路径也会显示二级组件

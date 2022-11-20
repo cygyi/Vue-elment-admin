@@ -14,6 +14,8 @@ import '@/permission' // permission control
 // 引入全部变量
 import * as directives from '@/directives'
 import * as filters from '@/filters'
+import checkPermission from '@/mixin/checkPermission'
+
 // 注册全局组件
 import Components from '@/components'
 // 注册自定义指令
@@ -24,7 +26,8 @@ Object.keys(directives).forEach(key => {
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
-
+// 全局混入对象 影响所有组件
+Vue.mixin(checkPermission)
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

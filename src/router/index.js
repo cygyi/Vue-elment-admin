@@ -72,10 +72,8 @@ export const constantRoutes = [
       path: '',
       component: () => import('@/import/index')
     }]
-  },
+  }
 
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
 ]
 // // 动态路由
 export const asyncRouter = [
@@ -91,7 +89,7 @@ export const asyncRouter = [
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
-  routes: [...constantRoutes, ...asyncRouter]
+  routes: [...constantRoutes]
 })
 
 const router = createRouter()
